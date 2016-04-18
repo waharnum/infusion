@@ -217,9 +217,8 @@ var fluid_2_0_0 = fluid_2_0_0 || {};
             var iframeWindow = that.iframe[0].contentWindow;
             that.iframeDocument = iframeWindow.document;
 
-            that.jQuery = iframeWindow.jQuery;
-            that.renderPrefsEditorContainer = that.jQuery("body", that.iframeDocument);
-            that.jQuery(that.iframeDocument).ready(that.events.afterRender.fire);
+            that.renderPrefsEditorContainer = $("body", that.iframeDocument);
+            $(that.iframeDocument).ready(that.events.afterRender.fire);
         });
         that.iframe.attr(that.options.markupProps);
 
