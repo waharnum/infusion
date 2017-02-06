@@ -7,51 +7,25 @@ var demos = fluid.registerNamespace("demos");
 require("gpii-webdriver");
 gpii.webdriver.loadTestingSupport();
 
-// TODO: Figure out why providing this on line 46 for invocation doesn't work as
-// expected.
 demos.isOverviewPanelCollapsed = function (testEnvironment) {
     console.log("isOverviewPanelCollapsed");
-    var locator = gpii.webdriver.By.css(".fl-overviewPanel-closeControl");
+    var locator = gpii.webdriver.By.css(".fl-overviewPanel-body");
 
     var closeControl = testEnvironment.webdriver.findElement(locator);
 
-    var promise = closeControl.getAttribute("aria-expanded").then(function (value) {
-        console.log(value);
-        if(value === "false" || value === false) {
-            console.log("panel is collapsed, aria-expanded: false");
+    var promise = closeControl.getSize().then(function (value) {
+        var height = value.height;
+        var width = value.width;
+        console.log(height, width);
+        var isCollapsed = height < 1 && width < 1;
+        if(isCollapsed) {
+            console.log("panel is collapsed, width and height < 1");
             return true;
         } else {
-            console.log("panel is collapsed, aria-expanded: true");
+            console.log("panel is not yet fully collapsed, width / height > 1");
             return false;
         }
     });
-    return promise;
-};
-
-demos.getPromise = function () {
-    var promise =  new Promise(
-        function(resolve, reject) {
-            var pass = false;
-            if(pass) {
-                resolve("looks good!");
-            } else {
-                reject("looks bad");
-            }
-
-        }
-    );
-
-    promise.then(
-        function(val) {
-            console.log(val);
-            return true;
-        }
-    )
-    .catch(
-        function(reason) {
-            console.log(reason);
-        }
-    )
 
     return promise;
 };
