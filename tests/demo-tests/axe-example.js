@@ -15,10 +15,38 @@ demos.isOverviewPanelCollapsed = function () {
     return true;
 };
 
+demos.getPromise = function () {
+    var promise =  new Promise(
+        function(resolve, reject) {
+            var pass = false;
+            if(pass) {
+                resolve("looks good!");
+            } else {
+                reject("looks bad");
+            }
+
+        }
+    );
+
+    promise.then(
+        function(val) {
+            console.log(val);
+            return true;
+        }
+    )
+    .catch(
+        function(reason) {
+            console.log(reason);
+        }
+    )
+
+    return promise;
+};
+
 fluid.defaults("demos.accessibilityReports", {
     gradeNames: ["gpii.test.webdriver.caseHolder", "gpii.test.webdriver.hasAxeContent"],
     scriptPaths: {
-        axe: "/home/vagrant/sync/node_modules/axe-core/axe.js"
+        axe: "node_modules/axe-core/axe.js"
     },
     rawModules: [{
         name: "Building accessibility reports...",
@@ -33,6 +61,11 @@ fluid.defaults("demos.accessibilityReports", {
                     },
                     {
                         event:    "{testEnvironment}.webdriver.events.onGetComplete",
+                        listener: "{testEnvironment}.webdriver.wait",
+                        args:     [gpii.webdriver.until.elementLocated({ css: ".fl-overviewPanel-closeControl"})]
+                    },
+                    {
+                        event:    "{testEnvironment}.webdriver.events.onWaitComplete",
                         listener: "{testEnvironment}.webdriver.findElement",
                         args:     [gpii.webdriver.By.css(".fl-overviewPanel-closeControl")]
                     },
@@ -44,7 +77,7 @@ fluid.defaults("demos.accessibilityReports", {
                     {
                         event:    "{testEnvironment}.webdriver.events.onActionsHelperComplete",
                         listener: "{testEnvironment}.webdriver.wait",
-                        args:     [demos.isOverviewPanelCollapsed, 250, "Exceeded timeout for overview panel to collapse."]
+                        args:     [demos.isOverviewPanelCollapsed, 1000, "Timed out"]
                     },
                     {
                         event: "{testEnvironment}.webdriver.events.onWaitComplete",
