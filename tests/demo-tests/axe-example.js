@@ -9,10 +9,23 @@ gpii.webdriver.loadTestingSupport();
 
 // TODO: Figure out why providing this on line 46 for invocation doesn't work as
 // expected.
-demos.isOverviewPanelCollapsed = function () {
-    //var collapsed = gpii.webdriver.By.css(".fl-overviewPanel-closeControl").getAttribute("aria-expanded");
-    //return collapsed;
-    return true;
+demos.isOverviewPanelCollapsed = function (testEnvironment) {
+    console.log("isOverviewPanelCollapsed");
+    var locator = gpii.webdriver.By.css(".fl-overviewPanel-closeControl");
+
+    var closeControl = testEnvironment.webdriver.findElement(locator);
+
+    var promise = closeControl.getAttribute("aria-expanded").then(function (value) {
+        console.log(value);
+        if(value === "false" || value === false) {
+            console.log("panel is collapsed, aria-expanded: false");
+            return true;
+        } else {
+            console.log("panel is collapsed, aria-expanded: true");
+            return false;
+        }
+    });
+    return promise;
 };
 
 demos.getPromise = function () {
@@ -45,6 +58,12 @@ demos.getPromise = function () {
 
 fluid.defaults("demos.accessibilityReports", {
     gradeNames: ["gpii.test.webdriver.caseHolder", "gpii.test.webdriver.hasAxeContent"],
+    invokers: {
+        "isOverviewPanelCollapsed": {
+            "funcName": "demos.isOverviewPanelCollapsed",
+            "args": ["{testEnvironment}"]
+        }
+    },
     scriptPaths: {
         axe: "node_modules/axe-core/axe.js"
     },
@@ -77,7 +96,7 @@ fluid.defaults("demos.accessibilityReports", {
                     {
                         event:    "{testEnvironment}.webdriver.events.onActionsHelperComplete",
                         listener: "{testEnvironment}.webdriver.wait",
-                        args:     [demos.isOverviewPanelCollapsed, 1000, "Timed out"]
+                        args:     ["{that}.isOverviewPanelCollapsed", 5000, "Timed out"]
                     },
                     {
                         event: "{testEnvironment}.webdriver.events.onWaitComplete",
